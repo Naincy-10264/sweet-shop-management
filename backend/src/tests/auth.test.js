@@ -1,5 +1,16 @@
+require("dotenv").config();   
+
 const request = require("supertest");
+const mongoose = require("mongoose");
 const app = require("../app");
+
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGO_URI);
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
+});
 
 describe("Auth API", () => {
   it("should register a new user", async () => {
