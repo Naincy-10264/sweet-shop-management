@@ -72,7 +72,22 @@ const restockSweet = async (req, res) => {
 
   return res.status(200).json(sweet);
 };
+const updateSweet = async (req, res) => {
+  const { id } = req.params;
+
+  const sweet = await Sweet.findByIdAndUpdate(
+    id,
+    req.body,
+    { new: true }
+  );
+
+  if (!sweet) {
+    return res.status(404).json({ message: "Sweet not found" });
+  }
+
+  return res.status(200).json(sweet);
+};
 
 
 
-module.exports = { addSweet, getAllSweets, searchSweets, purchaseSweet, restockSweet };
+module.exports = { addSweet, getAllSweets, searchSweets, purchaseSweet, restockSweet, updateSweet };

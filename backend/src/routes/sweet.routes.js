@@ -1,5 +1,5 @@
 const express = require("express");
-const { addSweet, getAllSweets, searchSweets, purchaseSweet, restockSweet } = require("../controllers/sweet.controller");
+const { addSweet, getAllSweets, searchSweets, purchaseSweet, restockSweet, updateSweet } = require("../controllers/sweet.controller");
 const { protect } = require("../middleware/auth.middleware");
 const { adminOnly } = require("../middleware/admin.middleware");
 
@@ -10,6 +10,7 @@ router.get("/", protect, getAllSweets);
 router.post("/", protect, adminOnly, addSweet);
 router.post("/:id/purchase", protect, purchaseSweet);
 router.post("/:id/restock", protect, adminOnly, restockSweet);
+router.put("/:id", protect, adminOnly, updateSweet);
 
 
 module.exports = router;
