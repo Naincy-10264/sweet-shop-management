@@ -4,6 +4,8 @@ const request = require("supertest");
 const mongoose = require("mongoose");
 const app = require("../app");
 const User = require("../models/User");
+const Sweet = require("../models/Sweet");
+
 
 let adminToken;
 
@@ -13,6 +15,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await Sweet.deleteMany({});
 
   // create admin user
   await request(app)
