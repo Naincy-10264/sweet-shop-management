@@ -10,7 +10,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await User.deleteMany({});   // ✅ CLEAN DB BEFORE EACH TEST
+  await User.deleteMany({});   // CLEAN DB BEFORE EACH TEST
 });
 
 afterAll(async () => {
@@ -72,5 +72,39 @@ it("should not login user with wrong password", async () => {
     });
 
   expect(res.statusCode).toBe(401);
+});
+
+it("should not access profile without token", async () => {
+  const res = await request(app).get("/api/auth/profile");
+  expect(res.statusCode).toBe(401);
+});
+
+it("should access profile with valid token", async () => {
+  // register
+  await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "JWT User",
+      email: "jwt@test.com",
+      password: "123456",
+    });
+
+  // login
+  const loginRes = await request(app)
+    .post("/api/auth/login")
+    .send({
+      email: "jwt@test.com",
+      password: "123456",
+    });
+
+  const token = loginRes.body.token;
+
+  // access protected route
+  const res = await request(app)
+    .get("/api/auth/profile")
+    .set("Authorization", `Bearer ${token}`);
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.email).toBe("jwt@test.com");
 });
 
