@@ -1,3 +1,4 @@
+const jwt=require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
@@ -22,3 +23,24 @@ const registerUser = async ({ name, email, password }) => {
 };
 
 module.exports = { registerUser };
+
+const loginUser = async ({ email, password }) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error("Invalid credentials");
+  }
+
+  const token = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+
+  return token;
+};
+module.exports = { registerUser, loginUser };
