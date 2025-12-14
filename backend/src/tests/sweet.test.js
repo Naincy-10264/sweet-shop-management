@@ -204,5 +204,28 @@ it("should allow admin to update a sweet", async () => {
   expect(res.body.quantity).toBe(25);
 });
 
+it("should allow admin to delete a sweet", async () => {
+  // add sweet
+  const addRes = await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      name: "Soan Papdi",
+      category: "Indian",
+      price: 18,
+      quantity: 40,
+    });
+
+  const sweetId = addRes.body._id;
+
+  // delete sweet
+  const res = await request(app)
+    .delete(`/api/sweets/${sweetId}`)
+    .set("Authorization", `Bearer ${adminToken}`);
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.message).toBe("Sweet deleted successfully");
+});
+
 
 });
