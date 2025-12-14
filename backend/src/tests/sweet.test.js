@@ -176,5 +176,33 @@ it("should allow admin to restock a sweet", async () => {
   expect(res.body.quantity).toBe(15);
 });
 
+it("should allow admin to update a sweet", async () => {
+  // add sweet
+  const addRes = await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      name: "Milk Cake",
+      category: "Indian",
+      price: 30,
+      quantity: 20,
+    });
+
+  const sweetId = addRes.body._id;
+
+  // update sweet
+  const res = await request(app)
+    .put(`/api/sweets/${sweetId}`)
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      price: 35,
+      quantity: 25,
+    });
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.price).toBe(35);
+  expect(res.body.quantity).toBe(25);
+});
+
 
 });
