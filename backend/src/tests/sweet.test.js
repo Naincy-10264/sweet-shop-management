@@ -150,5 +150,31 @@ it("should not allow purchase if sweet is out of stock", async () => {
   expect(res.body.message).toBe("Out of stock");
 });
 
+it("should allow admin to restock a sweet", async () => {
+  // add sweet
+  const addRes = await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      name: "Kaju Katli",
+      category: "Indian",
+      price: 25,
+      quantity: 10,
+    });
+
+  const sweetId = addRes.body._id;
+
+  // restock
+  const res = await request(app)
+    .post(`/api/sweets/${sweetId}/restock`)
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      quantity: 5,
+    });
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.quantity).toBe(15);
+});
+
 
 });
