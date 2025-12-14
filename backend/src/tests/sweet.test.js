@@ -81,5 +81,25 @@ describe("Sweet API", () => {
   expect(Array.isArray(res.body)).toBe(true);
   expect(res.body.length).toBeGreaterThan(0);
 });
+it("should search sweets by category", async () => {
+  // add sweet
+  await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      name: "Rasgulla",
+      category: "Bengali",
+      price: 20,
+      quantity: 30,
+    });
+
+  const res = await request(app)
+    .get("/api/sweets/search?category=Bengali")
+    .set("Authorization", `Bearer ${adminToken}`);
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.length).toBe(1);
+  expect(res.body[0].name).toBe("Rasgulla");
+});
 
 });
