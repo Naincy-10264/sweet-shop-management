@@ -127,5 +127,28 @@ it("should allow user to purchase a sweet", async () => {
   expect(res.body.quantity).toBe(4);
 });
 
+it("should not allow purchase if sweet is out of stock", async () => {
+  // add sweet with zero quantity
+  const addRes = await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      name: "Peda",
+      category: "Indian",
+      price: 8,
+      quantity: 0,
+    });
+
+  const sweetId = addRes.body._id;
+
+  // try to purchase
+  const res = await request(app)
+    .post(`/api/sweets/${sweetId}/purchase`)
+    .set("Authorization", `Bearer ${adminToken}`);
+
+  expect(res.statusCode).toBe(400);
+  expect(res.body.message).toBe("Out of stock");
+});
+
 
 });
