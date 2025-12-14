@@ -52,3 +52,25 @@ it("should login user with correct credentials", async () => {
   expect(res.statusCode).toBe(200);
   expect(res.body).toHaveProperty("token");
 });
+
+it("should not login user with wrong password", async () => {
+  // register user
+  await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Naincy",
+      email: "wrong@test.com",
+      password: "123456",
+    });
+
+  // attempt login with wrong password
+  const res = await request(app)
+    .post("/api/auth/login")
+    .send({
+      email: "wrong@test.com",
+      password: "wrongpass",
+    });
+
+  expect(res.statusCode).toBe(401);
+});
+
