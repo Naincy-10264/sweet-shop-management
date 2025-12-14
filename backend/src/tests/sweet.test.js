@@ -104,5 +104,28 @@ it("should search sweets by category", async () => {
   expect(res.body.length).toBe(1);
   expect(res.body[0].name).toBe("Rasgulla");
 });
+it("should allow user to purchase a sweet", async () => {
+  // add sweet
+  const addRes = await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      name: "Jalebi",
+      category: "Indian",
+      price: 12,
+      quantity: 5,
+    });
+
+  const sweetId = addRes.body._id;
+
+  // purchase
+  const res = await request(app)
+    .post(`/api/sweets/${sweetId}/purchase`)
+    .set("Authorization", `Bearer ${adminToken}`);
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.quantity).toBe(4);
+});
+
 
 });
