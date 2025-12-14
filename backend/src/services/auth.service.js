@@ -1,31 +1,29 @@
-const jwt=require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
 const INVALID_CREDENTIALS = "Invalid credentials";
 
+// 🔐 REGISTER USER
 const registerUser = async ({ name, email, password }) => {
-  // check if user already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error("User already exists");
   }
 
-  // hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // create user
   const user = await User.create({
     name,
     email,
     password: hashedPassword,
+    role: "user",
   });
 
   return user;
 };
 
-module.exports = { registerUser };
-
+// 🔑 LOGIN USER
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -38,11 +36,18 @@ const loginUser = async ({ email, password }) => {
   }
 
   const token = jwt.sign(
-    { id: user._id },
+    {
+      id: user._id,
+      role: user.role,
+    },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
 
   return token;
 };
-module.exports = { registerUser, loginUser };
+
+module.exports = {
+  registerUser,
+  loginUser,
+};
