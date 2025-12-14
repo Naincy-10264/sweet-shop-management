@@ -30,3 +30,25 @@ describe("Auth API", () => {
     expect(res.statusCode).toBe(201);
   });
 });
+
+it("should login user with correct credentials", async () => {
+  // first register user
+  await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Naincy",
+      email: "login@test.com",
+      password: "123456",
+    });
+
+  // then login
+  const res = await request(app)
+    .post("/api/auth/login")
+    .send({
+      email: "login@test.com",
+      password: "123456",
+    });
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body).toHaveProperty("token");
+});
